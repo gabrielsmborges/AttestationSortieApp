@@ -20,3 +20,192 @@ onPress={this.showRewarded}
         console.log(e);
       }
     }
+
+
+
+qr code generator : https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=I+Love+QR+Codes!++HI+MOM!&choe=UTF-8
+
+Encode URI(text)
+
+
+
+
+
+
+
+
+return(
+      <SafeAreaView style={{backgroundColor: "#DDF4FF"}}> 
+        <ScrollView style={{padding: 40}}>
+          <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Nouvelle Attestation</Text>
+          <Text style={{fontSize: 12}}>Remplissez vos informations et sélectionnez un motif.</Text>
+          <View style={{marginVertical: 100}}>
+            <TextInput
+              label="Prénom:"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 10}}
+            />
+            <TextInput
+              label="Nom:"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 20}}
+            />
+            <TextInput
+              label="Date de naissance (jj/mm/aaaa):"
+              onChangeText={text => {
+                if (text.match(/^\d{2}$/) !== null) {
+                  text = text + '/';
+              } else if (text.match(/^\d{2}\/\d{2}$/) !== null) {
+                  text = text + '/';
+              }
+              setText(text)
+              }}
+              value={text}
+              maxLength = {10}
+              keyboardType="numeric"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 20}}
+            />
+            <TextInput
+              label="Lieu de Naissance:"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 20}}
+            />
+            <TextInput
+              label="Addresse:"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 20}}
+            />
+            <TextInput
+              label="Ville:"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 20}}
+            />
+            <TextInput
+              label="Code Postal:"
+              keyboardType="numeric"
+              mode="outlined"
+              theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
+              style={{marginTop: 20}}
+            />
+
+            <Text style={{fontSize:25, marginTop: 50}}>Motif de Sortie:</Text>
+            <Dropdown
+              label='Motif de Sortie'
+              data={data}
+            />
+            <Text style={{fontSize:25, marginTop: 50}}>Date et Heure:</Text>
+            <View style={{flexDirection:'row', flexWrap:'wrap', marginTop: 20}}>
+
+              {show && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  timeZoneOffsetInMinutes={0}
+                  value={date}
+                  mode={mode}
+                  is24Hour={true}
+                  display="default"
+                  onChange={onChange}
+                />
+              )}
+              <Button style={{width: 150, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={showDatepicker}>
+                {`${date.getDate() >= 10 ? "": "0"}${date.getDate()}/${date.getMonth() >= 10 ? "": "0"}${date.getMonth() + 1}/${date.getFullYear()}`}
+              </Button>
+            
+              <Button style={{width: 150, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={showTimepicker}>
+                {`${date.getHours() >= 10 ? "": "0"}${date.getHours()}h${date.getMinutes() >= 10 ? "": "0"}${date.getMinutes()}`}
+              </Button>
+            </View>
+            <View style={{alignItems: "center", marginVertical: 30}}>
+              <Button style={{width: 150, paddingVertical: 10}} color="#1D749D" mode="contained" onPress={()=>console.log("Hello Button")}>
+                  Générer
+                </Button>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [sdate, ssetDate] = useState(new Date());
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = currentMode => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+    let data = [{
+      value: "Déplacements professionels",
+    }, {
+      value: 'Achats (1ère  nécessité/ Professionel)',
+    }, {
+      value: 'Consultations',
+    },{
+      value: 'Motif familial',
+    }, {
+      value: 'Assistance aux personnes vulnérables',
+    }, {
+      value: 'Garde d’enfants.',
+    }, {
+      value: 'Déplacement bref/Activité physique (1km)',
+    }, {
+      value: 'Convocation judiciaire ou administrative',
+    }, {
+      value: 'Missions d’intérêt général sur demande de l’autorité administrative',
+    } ];
+    const [text, setText] = useState('');
+
+
+
+
+
+
+              <Button style={{width: 150, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={showDatepicker}>
+                {`${this.state.date.getDate() >= 10 ? "": "0"}${this.state.date.getDate()}/${this.state.date.getMonth() >= 10 ? "": "0"}${this.state.date.getMonth() + 1}/${this.state.date.getFullYear()}`}
+              </Button>
+              <Button style={{width: 150, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={showTimepicker}>
+                {`${this.state.date.getHours() >= 10 ? "": "0"}${this.state.date.getHours()}h${this.state.date.getMinutes() >= 10 ? "": "0"}${this.state.date.getMinutes()}`}
+              </Button>

@@ -1,0 +1,22 @@
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded
+ } from 'expo-ads-admob';
+
+
+
+onPress={this.showRewarded}
+
+  showRewarded = async () => {
+      AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917'); // Test ID, Replace with your-admob-unit-id
+      
+      try{
+        await AdMobRewarded.requestAdAsync();
+        await AdMobRewarded.showAdAsync();
+      }
+      catch(e){
+        console.log(e);
+      }
+    }

@@ -10,11 +10,9 @@ import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 import { TextInput } from 'react-native-paper';
 import { Checkbox } from 'react-native-paper';
+import TimePicker from "react-native-24h-timepicker";
 
 
-
-
-//importing fonts
 
 
 const Stack = createStackNavigator()
@@ -22,23 +20,7 @@ const Tab = createBottomTabNavigator()
 
 
 
-function Infos() {
-  return (
-    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Cette Application n'est pas gérée par le gouvernement</Text>
-      
-    </SafeAreaView>
-  );
-}
-
-function Mes() {
-  return (
-    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Mes Attestations</Text>
-    </SafeAreaView>
-  );
-}
-
+//----------------------Nouvelle Atestation------------------------------
 class Nouvelle extends React.Component{
   render(){
     let data = [{
@@ -65,7 +47,7 @@ class Nouvelle extends React.Component{
         <ScrollView style={{padding: 40}}>
           <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Nouvelle Attestation</Text>
           <Text style={{fontSize: 12}}>Remplissez vos informations et sélectionnez un motif.</Text>
-          <View style={{marginVertical: 50}}>
+          <View style={{marginVertical: 100}}>
             <TextInput
               label="Prénom:"
               mode="outlined"
@@ -111,16 +93,41 @@ class Nouvelle extends React.Component{
 
             <Text style={{fontSize:25, marginTop: 50}}>Motif de Sortie:</Text>
             <Dropdown
-        label='Motif de Sortie'
-        data={data}
-      />
-            
+              label='Motif de Sortie'
+              data={data}
+            />
+            <Text style={{fontSize:25, marginTop: 50}}>Motif de Sortie:</Text>
+            <TimePicker
+          ref={ref => {
+            this.TimePicker = ref;
+          }}
+          onCancel={() => this.onCancel()}
+          onConfirm={(hour, minute) => this.onConfirm(hour, minute)}
+        />
               
           </View>
         </ScrollView>
       </SafeAreaView>
     )
   }
+}
+
+
+function Infos() {
+  return (
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Cette Application n'est pas gérée par le gouvernement</Text>
+      
+    </SafeAreaView>
+  );
+}
+
+function Mes() {
+  return (
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Mes Attestations</Text>
+    </SafeAreaView>   
+  );
 }
 
 

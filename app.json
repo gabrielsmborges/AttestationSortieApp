@@ -1,0 +1,17 @@
+{
+  "name": "attestation",
+  "displayName": "attestation",
+  "expo": {
+    "name": "attestation",
+    "slug": "attestation",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

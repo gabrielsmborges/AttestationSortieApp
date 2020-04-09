@@ -49,17 +49,16 @@ class Profile extends React.Component{
   constructor(props){
     super(props)
     this.state={
-      name: this.props.name
+      data: new Nouvelle()
     }
   }
   render(){
-    const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
     return(
       <View>
         <Card>
         <View style={{flexDirection: "row"}}>
           <View style={{flex: 5}}> 
-            <Card.Title title={this.state.name} subtitle="Card Subtitle" />
+            <Card.Title title={this.state.data.state.list[0].prenom} subtitle="Card Subtitle" />
           <Card.Content>
             <Text>12/29/2020 à 16h00</Text>
             <Text>Motif</Text>
@@ -95,6 +94,7 @@ class Nouvelle extends React.Component{
       motif:"",
       showdate : false,
       text: '',
+      list: [],
       data: [{
         value: "Déplacements professionels",
       }, {
@@ -119,6 +119,17 @@ class Nouvelle extends React.Component{
   }
 
   async componentDidMount() {
+    this.setState({
+      date: new Date(),
+      nom:"Borges",
+      prenom: "Gabriel",
+      dt_naissance:"25/01/2001",
+      lieu_naissance:"Cascais",
+      addresse: "7 Rue JEan Baptiste de la Quintine", 
+      ville:"Chartres",
+      cd_postal:"28000",
+      list: JSON.parse(await AsyncStorage.getItem('@Attestation:users')),
+    })
     AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
     AdMobInterstitial.setTestDeviceID('EMULATOR');
     await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
@@ -135,14 +146,20 @@ class Nouvelle extends React.Component{
       console.log('didclose')
     });
     await AdMobInterstitial.requestAdAsync();
+    console.log(this.state.list)
     }
+
+
     componentWillUnmount() {
       AdMobInterstitial.removeAllListeners();
       console.log("Will Unmount")
     }
+
+
     _handlePress = async () => {
-      this.verify()
-      setTimeout(()=>{AdMobInterstitial.showAdAsync()}, 500)
+      AdMobInterstitial.showAdAsync()
+      
+      setTimeout(()=>{this.verify()}, 500)
     };
 
 
@@ -189,6 +206,7 @@ class Nouvelle extends React.Component{
   }
 
   co(){
+    console.log('co connected')
     const newpers = new attest_profile(
       this.state.prenom,
       this.state.nom,
@@ -200,10 +218,33 @@ class Nouvelle extends React.Component{
       this.state.motif,
       this.state.date
       )
+      //add a new pers to the list
+      this.setState({list: [ newpers, ...this.state.list]})
+      console.log(this.state.list)
+      //store the data in memory (asyncStorage)
+      this._storeData()
   }
 
 
+  //storing the data function
+  _storeData = async () => {
+    try {
+      await AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list));
+    } catch (error) {
+      console.log('Not saved')
+    }
+  };
 
+  getListData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@Attestation:users')
+      if(value !== null) {
+        return JSON.parse(value)
+      }
+    } catch(e) {
+      console.log('False Value')
+    }
+  }
 
 
 

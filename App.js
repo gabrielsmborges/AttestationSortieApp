@@ -8,11 +8,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Dropdown } from 'react-native-material-dropdown';
 import { TextInput, Button, Card, Title, Paragraph, Avatar} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded } from 'expo-ads-admob';
 
 class attest_profile{
-  constructor(nom, prenom, dt_naissance, lieu_naissance, addresse, ville, cd_postal, motif, date){
-    this.nom = nom
+  constructor(prenom, nom, dt_naissance, lieu_naissance, addresse, ville, cd_postal, motif, date){
     this.prenom = prenom
+    this.nom = nom
     this.dt_naissance = dt_naissance
     this.lieu_naissance = lieu_naissance
     this.addresse = addresse
@@ -83,35 +84,129 @@ class Nouvelle extends React.Component{
   constructor(props){
     super(props)
     this.state={
+      date: new Date(),
       nom:"",
       prenom: "",
       dt_naissance:"",
       lieu_naissance:"",
       addresse: "", 
+      ville:"",
+      cd_postal:"",
+      motif:"",
       showdate : false,
-      date: new Date(),
       text: '',
       data: [{
         value: "Déplacements professionels",
       }, {
-        value: 'Achats (1ère  nécessité/ Professionel)',
+        value: "Achats (1ère nécessité/Professionel)",
       }, {
-        value: 'Consultations',
+        value: "Consultations",
       },{
-        value: 'Motif familial',
+        value: "Motif familial",
       }, {
-        value: 'Assistance auxS personnes vulnérables',
+        value: "Assistance aux personnes vulnérables",
       }, {
-        value: 'Garde d’enfants.',
+        value: "Garde d'enfants",
       }, {
-        value: 'Déplacement bref/Activité physique (1km)',
+        value: "Déplacement bref/Activité physique (1km)",
       }, {
-        value: 'Convocation judiciaire ou administrative',
+        value: "Convocation judiciaire ou administrative",
       }, {
-        value: 'Missions d’intérêt général sur demande de l’autorité administrative',
-      }]
+        value: "Missions d'intérêt général sur demande de l'autorité administrative",
+      }], 
+      loadeAd: false,
     }
   }
+
+  async componentDidMount() {
+    AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
+    AdMobInterstitial.setTestDeviceID('EMULATOR');
+    await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
+    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {
+      console.log("Loaded");
+    });
+    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () =>
+      console.log("FailedToLoad")
+    );
+    AdMobInterstitial.addEventListener("interstitialDidOpen", () =>
+      console.log("Opened")
+    );
+    AdMobInterstitial.addEventListener('interstitialDidClose', () => {
+      console.log('didclose')
+    });
+    await AdMobInterstitial.requestAdAsync();
+    }
+    componentWillUnmount() {
+      AdMobInterstitial.removeAllListeners();
+      console.log("Will Unmount")
+    }
+    _handlePress = async () => {
+      this.verify()
+      setTimeout(()=>{AdMobInterstitial.showAdAsync()}, 500)
+    };
+
+
+
+
+  verify(){
+    console.log("verifying")
+    setTimeout(()=>{
+      if(this.state.prenom){
+        if(this.state.nom){
+          if(this.state.dt_naissance){
+            if(this.state.lieu_naissance){
+              if(this.state.addresse){
+                if(this.state.ville){
+                  if(this.state.cd_postal){
+                    if(this.state.motif){
+                      this.co()
+                      return true
+                    }else{
+                      alert("Motif Vide")
+                    }
+                  }else{
+                    alert("Code Postal Invalide")
+                  }
+                }else{
+                  alert("Ville Invalide")
+                }
+              }else{
+                alert("Adresse Invalide")
+              }
+            }else{
+              alert("Lieu de Naissance Invalide")
+            }
+          }else{
+            alert("Date de Naissance Invalide")
+          }
+        }else{
+          alert("Nom Invalide")
+        }
+      }else{
+        alert("Prénom Invalide")
+      }
+    }, 500)
+  }
+
+  co(){
+    const newpers = new attest_profile(
+      this.state.prenom,
+      this.state.nom,
+      this.state.dt_naissance,
+      this.state.lieu_naissance,
+      this.state.addresse,
+      this.state.ville, 
+      this.state.cd_postal,
+      this.state.motif,
+      this.state.date
+      )
+  }
+
+
+
+
+
+
   render(){
     return(
       <SafeAreaView style={{backgroundColor: "#DDF4FF"}}> 
@@ -170,12 +265,16 @@ class Nouvelle extends React.Component{
             />
             <TextInput
               label="Ville:"
+              value={this.state.ville}
+              onChangeText={ville=> this.setState({ville: ville})}
               mode="outlined"
               theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
               style={{marginTop: 20}}
             />
             <TextInput
               label="Code Postal:"
+              value={this.state.cd_postal}
+              onChangeText={cd_postal=> this.setState({cd_postal: cd_postal})}
               keyboardType="numeric"
               mode="outlined"
               theme={{ colors: { primary: '#1D749D',underlineColor:'transparent'}}}
@@ -186,6 +285,7 @@ class Nouvelle extends React.Component{
             <Dropdown
               label='Motif de Sortie'
               data={this.state.data}
+              onChangeText = {value => {this.setState({motif: value})}}
             />
             <Text style={{fontSize:25, marginTop: 50}}>Date et Heure:</Text>
             <View style={{flexDirection:'row', flexWrap:'wrap', marginTop: 20}}>
@@ -211,7 +311,7 @@ class Nouvelle extends React.Component{
               </Button>
             </View>
             <View style={{alignItems: "center", marginVertical: 30}}>
-              <Button style={{width: 150, paddingVertical: 10}} color="#1D749D" mode="contained" onPress={()=>console.log("Hello Button")}>
+              <Button style={{width: 150, paddingVertical: 10}} color="#1D749D" mode="contained" onPress={this._handlePress} >
                 Générer
               </Button>
             </View>
@@ -230,7 +330,7 @@ function Infos() {
       <ScrollView style={{padding: 40}}>
         <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Infos</Text>
         <View style={{marginTop: 50}}>
-          <Text style={{fontSize: 15, marginVertical: 20}}>Cette application n’est pas gérée par le gouvernement</Text>
+          <Text style={{fontSize: 15, marginVertical: 20}}>Cette application n"est pas gérée par le gouvernement</Text>
           <Text style={{fontSize: 15, marginVertical: 20, color: "#1D749D"}} onPress={() => Linking.openURL('https://media.interieur.gouv.fr/deplacement-covid-19/')}>Site officiel pour créer ses attestations</Text>
           <View style={{flexDirection: "row", marginVertical: 20}}>
             <Text>Application dévelopée par </Text>

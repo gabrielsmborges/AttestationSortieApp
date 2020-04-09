@@ -8,7 +8,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Dropdown } from 'react-native-material-dropdown';
 import { TextInput, Button, Card, Title, Paragraph, Avatar} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded } from 'expo-ads-admob';
+import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded } from 'expo-ads-admob'
+import {YellowBox} from 'react-native';
+console.disableYellowBox = true;
+
+const Stack = createStackNavigator()
+const Tab = createBottomTabNavigator()
 
 class attest_profile{
   constructor(prenom, nom, dt_naissance, lieu_naissance, addresse, ville, cd_postal, motif, date){
@@ -42,23 +47,15 @@ class attest_profile{
 }
 
 
-const Stack = createStackNavigator()
-const Tab = createBottomTabNavigator()
-
 class Profile extends React.Component{
-  constructor(props){
-    super(props)
-    this.state={
-      data: new Nouvelle()
-    }
-  }
   render(){
     return(
       <View>
+        {console.log(this.state.data)}
         <Card>
         <View style={{flexDirection: "row"}}>
           <View style={{flex: 5}}> 
-            <Card.Title title={this.state.data.state.list[0].prenom} subtitle="Card Subtitle" />
+            <Card.Title title={"Gabriel"} subtitle="Card Subtitle" />
           <Card.Content>
             <Text>12/29/2020 à 16h00</Text>
             <Text>Motif</Text>
@@ -94,7 +91,6 @@ class Nouvelle extends React.Component{
       motif:"",
       showdate : false,
       text: '',
-      list: [],
       data: [{
         value: "Déplacements professionels",
       }, {
@@ -117,7 +113,7 @@ class Nouvelle extends React.Component{
       loadeAd: false,
     }
   }
-
+  list_users = []
   async componentDidMount() {
     this.setState({
       date: new Date(),
@@ -128,7 +124,7 @@ class Nouvelle extends React.Component{
       addresse: "7 Rue JEan Baptiste de la Quintine", 
       ville:"Chartres",
       cd_postal:"28000",
-      list: JSON.parse(await AsyncStorage.getItem('@Attestation:users')),
+      list: []
     })
     AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
     AdMobInterstitial.setTestDeviceID('EMULATOR');
@@ -136,9 +132,9 @@ class Nouvelle extends React.Component{
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {
       console.log("Loaded");
     });
-    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () =>
+    /*AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () =>
       console.log("FailedToLoad")
-    );
+    );*/
     AdMobInterstitial.addEventListener("interstitialDidOpen", () =>
       console.log("Opened")
     );
@@ -146,7 +142,7 @@ class Nouvelle extends React.Component{
       console.log('didclose')
     });
     await AdMobInterstitial.requestAdAsync();
-    console.log(this.state.list)
+    //console.log(this.state.list)
     }
 
 
@@ -157,8 +153,8 @@ class Nouvelle extends React.Component{
 
 
     _handlePress = async () => {
+      console.log('pressed')
       AdMobInterstitial.showAdAsync()
-      
       setTimeout(()=>{this.verify()}, 500)
     };
 
@@ -219,31 +215,8 @@ class Nouvelle extends React.Component{
       this.state.date
       )
       //add a new pers to the list
-      this.setState({list: [ newpers, ...this.state.list]})
-      console.log(this.state.list)
-      //store the data in memory (asyncStorage)
-      this._storeData()
-  }
-
-
-  //storing the data function
-  _storeData = async () => {
-    try {
-      await AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list));
-    } catch (error) {
-      console.log('Not saved')
-    }
-  };
-
-  getListData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@Attestation:users')
-      if(value !== null) {
-        return JSON.parse(value)
-      }
-    } catch(e) {
-      console.log('False Value')
-    }
+      this.setState({list: newpers})
+      this.props.update_parentlist(this.state.list)
   }
 
 
@@ -364,24 +337,30 @@ class Nouvelle extends React.Component{
   }
 }
 
-
-function Infos() {
-  return (
-    <SafeAreaView style={{flex: 1, backgroundColor: "#DDF4FF"}}>
-      <ScrollView style={{padding: 40}}>
-        <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Infos</Text>
-        <View style={{marginTop: 50}}>
-          <Text style={{fontSize: 15, marginVertical: 20}}>Cette application n"est pas gérée par le gouvernement</Text>
-          <Text style={{fontSize: 15, marginVertical: 20, color: "#1D749D"}} onPress={() => Linking.openURL('https://media.interieur.gouv.fr/deplacement-covid-19/')}>Site officiel pour créer ses attestations</Text>
-          <View style={{flexDirection: "row", marginVertical: 20}}>
-            <Text>Application dévelopée par </Text>
-            <Text style={{color: "#1D749D"}} onPress={() => Linking.openURL('http://gabrielborges.dev')}>Gabriel Borges</Text>
+class Infos extends React.Component{
+  constructor(props){
+    super(props)
+    this.state= {
+    }
+  }
+  render(){
+    return (
+      <SafeAreaView style={{flex: 1, backgroundColor: "#DDF4FF"}}>
+        <ScrollView style={{padding: 40}}>
+          <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Infos</Text>
+          <View style={{marginTop: 50}}>
+            <Text style={{fontSize: 15, marginVertical: 20}}>Cette application n"est pas gérée par le gouvernement</Text>
+            <Text style={{fontSize: 15, marginVertical: 20, color: "#1D749D"}} onPress={() => Linking.openURL('https://media.interieur.gouv.fr/deplacement-covid-19/')}>Site officiel pour créer ses attestations</Text>
+            <View style={{flexDirection: "row", marginVertical: 20}}>
+              <Text>Application dévelopée par</Text>
+              <Text style={{color: "#1D749D"}} onPress={() => Linking.openURL('http://gabrielborges.dev')}>Gabriel Borges</Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-      <Text style={{fontSize: 20, color: "white", position: "absolute", bottom: 0, margin: 50,padding: 10, backgroundColor: "#1D749D", borderRadius: 14}} onPress={() => Linking.openURL('mailto:gabrielsmborges@gmail.com')}>Contact</Text>
-    </SafeAreaView>
-  );
+        </ScrollView>
+        <Text style={{fontSize: 20, color: "white", position: "absolute", bottom: 0, margin: 50,padding: 10, backgroundColor: "#1D749D", borderRadius: 14}} onPress={() => Linking.openURL('mailto:gabrielsmborges@gmail.com')}>Contact</Text>
+      </SafeAreaView>
+    )
+  }
 }
 
 class Mes extends React.Component{
@@ -389,49 +368,87 @@ class Mes extends React.Component{
       return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#DDF4FF"}}>
           <View style={{margin: 40}}>
-            <Profile name="Gabriel" />
+            <Text>Here users</Text>
           </View>
         </SafeAreaView>   
       );
     }
   }
 
+export default class App extends React.Component{
+  constructor(props){
+    super(props)
+    this.updatelist = this.updatelist.bind(this)
+    this.state={
+      list: []
+    }
+  }
 
-export default function App() {
-  return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Tab.Navigator 
-          initialRouteName="Nouvelle Attestation"
-          tabBarOptions={{
-          activeTintColor: '#1D749D'
-        }}>
-          <Tab.Screen name="Mes Attestations" component={Mes} 
-            options={{
-              tabBarLabel: 'Mes Attestations',
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="file-document" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen name="Nouvelle Attestation" component={Nouvelle} 
-            options={{
-              tabBarLabel: 'Nouvelle Attestation',
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="plus-circle" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen name="Infos" component={Infos} 
-            options={{
-              tabBarLabel:" Infos",
-              tabBarIcon: ({color, size}) =>(
-                <MaterialCommunityIcons name="information" color={color} size={size}/>
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
-  );
+
+  updatelist(target){
+    this.setState({
+      list: [target, ...this.state.list]
+    })
+    
+    this._storeData()
+    console.log(data)
+  }
+  _storeData = async () => {
+    try {
+      await AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list));
+    } catch (error) {
+      console.log('Not saved')
+    }
+  };
+
+  _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@Attestation:users');
+      if (value !== null) {
+        return value
+      }
+    } catch (error) {
+      console.log('Didn\'t get the data')
+    }
+  };
+  render(){
+    return (
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Tab.Navigator 
+            initialRouteName="Nouvelle Attestation"
+            tabBarOptions={{
+            activeTintColor: '#1D749D'
+          }} >
+            <Tab.Screen name="Mes Attestations" component={Mes} 
+              options={{
+                tabBarLabel: 'Mes Attestations',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons name="file-document" color={color} size={size} />
+                ),
+              }}
+
+            />
+            <Tab.Screen name="Nouvelle Attestation" component={()=><Nouvelle  update_parentlist = {this.updatelist}  parentlist={this.state.list}/>} 
+              options={{
+                tabBarLabel: 'Nouvelle Attestation',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons name="plus-circle" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen name="Infos" component={()=><Infos name={"Nes"}/>}
+              screenProps={{name: "teste"}}
+              options={{
+                tabBarLabel:" Infos",
+                tabBarIcon: ({color, size}) =>(
+                  <MaterialCommunityIcons name="information" color={color} size={size}/>
+                ),
+              }}
+            />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    );
+  }
 }

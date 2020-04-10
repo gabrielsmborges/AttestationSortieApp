@@ -48,21 +48,29 @@ class attest_profile{
 
 
 class Profile extends React.Component{
+  constructor(props){
+    super(props)
+    this.state={}
+  }
+  date = new Date(Date.parse(this.props.profile.date))
   render(){
     return(
       <View>
-        {console.log(this.state.data)}
         <Card>
         <View style={{flexDirection: "row"}}>
           <View style={{flex: 5}}> 
-            <Card.Title title={"Gabriel"} subtitle="Card Subtitle" />
-          <Card.Content>
-            <Text>12/29/2020 à 16h00</Text>
-            <Text>Motif</Text>
-          </Card.Content>
-          <Card.Actions>
-            <Button>PDF</Button>
-          </Card.Actions>
+            <Card.Title title={this.props.profile.prenom} subtitle={this.props.profile.motif} />
+            <Card.Content>
+              <Text>
+                {
+                  `${this.date.getDate() >= 10 ? "": "0"}${this.date.getDate()}/${this.date.getMonth() >= 10 ? "": "0"}${this.date.getMonth() + 1}/${this.date.getFullYear()} à ${this.date.getHours() >= 10 ? "": "0"}${this.date.getHours()}h${this.date.getMinutes() >= 10 ? "": "0"}${this.date.getMinutes()}`
+               }
+              </Text>
+              <Text>Motif</Text>
+            </Card.Content>
+            <Card.Actions>
+              <Button>PDF</Button>
+            </Card.Actions>
           </View>
 
           <View style={{flex: 5}}>
@@ -364,12 +372,20 @@ class Infos extends React.Component{
 }
 
 class Mes extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {}
+  }
     render(){
       return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#DDF4FF"}}>
-          <View style={{margin: 40}}>
-            <Text>Here users</Text>
-          </View>
+          <ScrollView>
+            <View style={{margin: 40}}>
+              {this.props.list.map(value => {
+                return <Profile profile={value}/>
+                })}
+            </View>
+            </ScrollView>
         </SafeAreaView>   
       );
     }
@@ -384,33 +400,43 @@ export default class App extends React.Component{
     }
   }
 
-
+  componentDidMount(){
+    //AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
+    AsyncStorage.getItem('@Attestation:users').then(value => {this.setState({list: JSON.parse(value)})})
+  }
   updatelist(target){
     this.setState({
       list: [target, ...this.state.list]
     })
-    
-    this._storeData()
-    console.log(data)
+    AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
+    AsyncStorage.getItem('@Attestation:users').then(value => {console.log(JSON.parse(value))})
   }
-  _storeData = async () => {
+
+  /*_storeData = async () => {
     try {
-      await AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list));
+      await AsyncStorage.setItem('@Attestation:users', "3");
     } catch (error) {
       console.log('Not saved')
     }
-  };
+  };*/
 
-  _retrieveData = async () => {
+  /*_retrieveData = async () => {
+    var value,collect;
     try {
-      const value = await AsyncStorage.getItem('@Attestation:users');
+      value = await AsyncStorage.getItem('@Attestation:users').then(
+        (values) => {
+          collect = values;
+          //console.log('Then: ',values);
+        });
       if (value !== null) {
         return value
       }
     } catch (error) {
       console.log('Didn\'t get the data')
     }
-  };
+    return collect;
+  };*/
+
   render(){
     return (
       <SafeAreaProvider>
@@ -420,7 +446,7 @@ export default class App extends React.Component{
             tabBarOptions={{
             activeTintColor: '#1D749D'
           }} >
-            <Tab.Screen name="Mes Attestations" component={Mes} 
+            <Tab.Screen name="Mes Attestations" component={()=><Mes list= {this.state.list}/>} 
               options={{
                 tabBarLabel: 'Mes Attestations',
                 tabBarIcon: ({ color, size }) => (
@@ -437,7 +463,7 @@ export default class App extends React.Component{
                 ),
               }}
             />
-            <Tab.Screen name="Infos" component={()=><Infos name={"Nes"}/>}
+            <Tab.Screen name="Infos" component={()=><Infos/>}
               screenProps={{name: "teste"}}
               options={{
                 tabBarLabel:" Infos",

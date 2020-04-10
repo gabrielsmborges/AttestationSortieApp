@@ -46,7 +46,6 @@ class attest_profile{
   }
 }
 
-
 class Profile extends React.Component{
   constructor(props){
     super(props)
@@ -55,7 +54,7 @@ class Profile extends React.Component{
   date = new Date(Date.parse(this.props.profile.date))
   render(){
     return(
-      <View>
+      <View style={{marginVertical: 10}}>
         <Card>
         <View style={{flexDirection: "row"}}>
           <View style={{flex: 5}}> 
@@ -83,7 +82,6 @@ class Profile extends React.Component{
   }
 }
 
-//----------------------Nouvelle Atestation------------------------------
 class Nouvelle extends React.Component{
   constructor(props){
     super(props)
@@ -381,15 +379,13 @@ class Mes extends React.Component{
         <SafeAreaView style={{ flex: 1, backgroundColor: "#DDF4FF"}}>
           <ScrollView>
             <View style={{margin: 40}}>
-              {this.props.list.map(value => {
-                return <Profile profile={value}/>
-                })}
+              {this.props.list.map(value => <Profile profile={value}/>)}
             </View>
             </ScrollView>
         </SafeAreaView>   
       );
     }
-  }
+}
 
 export default class App extends React.Component{
   constructor(props){

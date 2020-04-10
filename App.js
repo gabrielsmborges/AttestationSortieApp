@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, ScrollView, Linking , AsyncStorage} from 'react-native';
+import { Text, View, ScrollView, Linking , AsyncStorage, TouchableOpacity} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -51,7 +51,23 @@ class Profile extends React.Component{
     super(props)
     this.state={}
   }
+  creation = new Date()
+
+  creationdate = `${this.creation.getDate() >= 10 ? "": "0"}${this.creation.getDate()}/${this.creation.getMonth() >= 10 ? "": "0"}${this.creation.getMonth() + 1}/${this.creation.getFullYear()}`
+
+  creationhours = `${this.creation.getHours() >= 10 ? "": "0"}${this.creation.getHours()}h${this.creation.getMinutes() >= 10 ? "": "0"}${this.creation.getMinutes()}`
+
   date = new Date(Date.parse(this.props.profile.date))
+  //DD/MM/YYYY
+  datedate = `${this.date.getDate() >= 10 ? "": "0"}${this.date.getDate()}/${this.date.getMonth() >= 10 ? "": "0"}${this.date.getMonth() + 1}/${this.date.getFullYear()}`
+  //hh:mm
+  datehours = `${this.date.getHours() >= 10 ? "": "0"}${this.date.getHours()}h${this.date.getMinutes() >= 10 ? "": "0"}${this.date.getMinutes()}`
+  textforuri = `Cree le: ${this.creationdate} a ${this.creationhours}; Nom: ${this.props.profile.nom}; Prenom: ${this.props.profile.prenom}; Naissance: ${this.datedate} a ${this.props.profile.lieu_naissance}; Adresse: ${this.props.profile.addresse} ${this.props.profile.cd_postal} ${this.props.profile.ville}; Sortie: ${this.datedate} a ${this.datehours}; Motifs: ${this.props.profile.motif}`
+
+  uri = encodeURI(this.textforuri)
+
+  qr_code = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${this.uri}&choe=UTF-8`
+
   render(){
     return(
       <View style={{marginVertical: 10}}>
@@ -62,7 +78,7 @@ class Profile extends React.Component{
             <Card.Content>
               <Text>
                 {
-                  `${this.date.getDate() >= 10 ? "": "0"}${this.date.getDate()}/${this.date.getMonth() >= 10 ? "": "0"}${this.date.getMonth() + 1}/${this.date.getFullYear()} à ${this.date.getHours() >= 10 ? "": "0"}${this.date.getHours()}h${this.date.getMinutes() >= 10 ? "": "0"}${this.date.getMinutes()}`
+                  `${this.datedate} à ${this.datehours}`
                }
               </Text>
               <Text>Motif</Text>
@@ -73,7 +89,9 @@ class Profile extends React.Component{
           </View>
 
           <View style={{flex: 5}}>
-          <Card.Cover  style={{flex: 1}} source={{ uri: "https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=I+Love+QR+Codes!++HI+MOM!&choe=UTF-8" }} />
+            <TouchableOpacity onPress={()=>console.log('Touched')}>
+            <Card.Cover style={{flex: 1}} source={{ uri: this.qr_code }} />
+            </TouchableOpacity>
           </View>
         </View>
         </Card>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, ScrollView, Linking , AsyncStorage, TouchableOpacity} from 'react-native';
+import { Text, View, ScrollView, Linking , AsyncStorage, TouchableOpacity, Image, TouchableHighlight} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,9 +8,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Dropdown } from 'react-native-material-dropdown';
 import { TextInput, Button, Card, Title, Paragraph, Avatar} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded } from 'expo-ads-admob'
-import {YellowBox} from 'react-native';
-console.disableYellowBox = true;
+import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded, AdMob } from 'expo-ads-admob'
+import Swipeable from 'react-native-swipeable-row';
+import Swipeout from 'react-native-swipeout';
+import * as FileSystem from 'expo-file-system';
+import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
+console.disableYellowBox = false;
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -67,6 +70,102 @@ class Profile extends React.Component{
   uri = encodeURI(this.textforuri)
 
   qr_code = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${this.uri}&choe=UTF-8`
+  
+  buildPDF = async () => {
+    const page1 = PDFPage
+    .modify(0)
+    .drawText(
+      `${this.props.profile.prenom} ${this.props.profile.nom}`,
+      {
+        x: 123, 
+        y: 683,
+        color: "#ffffff",
+        size: 11
+      })
+    .drawText(
+      `${this.props.profile.dt_naissance}`,
+      {
+        x: 123,
+        y: 661,
+        color: "#ffffff",
+        size: 11
+      }
+      )
+    .drawText(
+      `${this.props.profile.lieu_naissance}`,
+      {
+        x: 92,
+        y: 638,
+        color: "#ffffff",
+        size: 11
+      }
+      )
+    .drawText(
+      `${this.props.profile.addresse} ${this.props.profile.cd_postal} ${this.props.profile.ville}`,
+      {
+        x: 134,
+        y: 613,
+        color: "#ffffff",
+        size: 11
+      }
+      )
+
+    if(this.props.profile.motif.includes('professionels')){
+      page1.drawText('x', {x: 76, y: 527, size: 19})
+    }
+    else if(this.props.profile.motif.includes('Achats')){
+      page1.drawText('x', {x: 76, y: 478, size: 19})
+    }
+    else if(this.props.profile.motif.includes('Consultations')){
+      page1.drawText('x', {x: 76, y: 436, size: 19})
+    }
+    else if(this.props.profile.motif.includes('familial')||this.props.profile.motif.includes('Assistance')){
+      page1.drawText('x', {x: 76, y: 400, size: 19})
+    }
+    else if(this.props.profile.motif.includes('physique')){
+      page1.drawText('x', {x: 76, y: 345, size: 19})
+    }
+    else if(this.props.profile.motif.includes('judiciaire')){
+      page1.drawText('x', {x: 76, y: 298, size: 19})
+    }
+    else if(this.props.profile.motif.includes('demande')){
+      page1.drawText('x', {x: 76, y: 260, size: 19})
+    }
+
+    page1
+    .drawText(`${this.props.profile.ville}`,{x: 111, y: 226, size: 11})
+    .drawText('Date de création:', {x: 464, y: 150, size: 7})
+    .drawText(`${this.creationdate} à ${this.creationhours}`, {x: 455, y: 144, size: 7})
+    .drawImage(
+      this.uri,
+      'png',
+      {
+        x: 300 - 170,
+        y: 155,
+        width: 100,
+        height: 100,
+      }
+      )
+    const page2 = PDFPage.create()
+    .setMediaBox(300, 300)
+    .drawImage(this.uri, 'png',{
+      x: 5,
+      y: 25,
+      width: 300, 
+      height: 300
+    })
+
+    //const docsDir = await PDFLib.getDocumentsDirectory();
+    const existingPDF = require('./assets/pdf/certificate.pdf')
+    PDFDocument
+  .modify(existingPDF)
+  .modifyPages(page1)
+  .addPage(page2)
+  .write() // Returns a promise that resolves with the PDF's path
+  .then(path => {
+    console.log('PDF modified at: ' + path);
+  });
+  }
 
   render(){
     return(
@@ -84,12 +183,18 @@ class Profile extends React.Component{
               <Text>Motif</Text>
             </Card.Content>
             <Card.Actions>
-              <Button>PDF</Button>
+              <Button onPress={()=>{
+                console.log('Presseds')
+                this.buildPDF()
+                
+                
+
+                }} color="#1D749D">PDF</Button>
             </Card.Actions>
           </View>
 
           <View style={{flex: 5}}>
-            <TouchableOpacity onPress={()=>console.log('Touched')}>
+            <TouchableOpacity onPress={()=>this.props.showQr(this.qr_code)}>
             <Card.Cover style={{flex: 1}} source={{ uri: this.qr_code }} />
             </TouchableOpacity>
           </View>
@@ -99,6 +204,26 @@ class Profile extends React.Component{
     )
   }
 }
+
+class QrCode extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {}
+  }
+
+  render(){
+    return(
+     <TouchableOpacity onPress={()=>this.props.hideQr()} style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0,zIndex: 999}}>
+       <View style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0, 0, 0, 0.95)",justifyContent: 'center'}}>
+        <Card style={{height: 400, width: 400}}>
+          <Card.Cover style={{flex: 1}} source={{uri: this.props.uri}}/>
+        </Card>
+      </View>
+     </TouchableOpacity>
+    )
+  }
+}
+
 
 class Nouvelle extends React.Component{
   constructor(props){
@@ -151,7 +276,7 @@ class Nouvelle extends React.Component{
       list: []
     })
     AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
-    AdMobInterstitial.setTestDeviceID('EMULATOR');
+    AdMob.setTestDeviceIDAsync('EMULATOR');
     await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {
       console.log("Loaded");
@@ -341,10 +466,10 @@ class Nouvelle extends React.Component{
                 }}
               />
             )}
-              <Button style={{width: 150, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={()=>{this.setState({showdate: true, mode:"date"})}}>
+              <Button style={{flex: 1, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={()=>{this.setState({showdate: true, mode:"date"})}}>
                 {`${this.state.date.getDate() >= 10 ? "": "0"}${this.state.date.getDate()}/${this.state.date.getMonth() >= 10 ? "": "0"}${this.state.date.getMonth() + 1}/${this.state.date.getFullYear()}`}
               </Button>
-              <Button style={{width: 150, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={()=>{this.setState({showdate: true, mode: "time"})}}>
+              <Button style={{flex: 1, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={()=>{this.setState({showdate: true, mode: "time"})}}>
                 {`${this.state.date.getHours() >= 10 ? "": "0"}${this.state.date.getHours()}h${this.state.date.getMinutes() >= 10 ? "": "0"}${this.state.date.getMinutes()}`}
               </Button>
             </View>
@@ -390,17 +515,33 @@ class Infos extends React.Component{
 class Mes extends React.Component{
   constructor(props){
     super(props)
-    this.state = {}
+    this.state = {
+      showQr: false,
+      actualQr : ""
+    }
   }
+  changeQr(uri){
+    this.setState({showQr: !this.state.showQr, actualQr : uri})
+  }
+  refresh(){
+    list = this.props.list
+  }
+  list = this.props.list
+
+  
     render(){
+
       return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#DDF4FF"}}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: "#DDF4FF"}}>
+            {this.state.showQr ? <QrCode hideQr={this.changeQr.bind(this)} uri={this.state.actualQr}/>: console.log('not showing qr')}
           <ScrollView>
             <View style={{margin: 40}}>
-              {this.props.list.map(value => <Profile profile={value}/>)}
+            <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Mes Attestations</Text>
+              {this.props.list[0] ? (this.list.map(value => <Profile refresh={this.refresh.bind(this)} delete={this.props.delete} showQr={this.changeQr.bind(this)} profile={value}/>)) : <Text>Aucune Attestation n'a été crée</Text>}
+              {this.props.list[0] ? <Button color="red" mode="contained" icon="trash-can" onPress={()=>{this.props.delete()}}>Supprimer Tout</Button> : <Text></Text>}
             </View>
             </ScrollView>
-        </SafeAreaView>   
+        </SafeAreaView>  
       );
     }
 }
@@ -410,46 +551,36 @@ export default class App extends React.Component{
     super(props)
     this.updatelist = this.updatelist.bind(this)
     this.state={
-      list: []
+      list: [],
+      lastRefresh: Date(Date.now()).toString(),
     }
   }
-
   componentDidMount(){
     //AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
     AsyncStorage.getItem('@Attestation:users').then(value => {this.setState({list: JSON.parse(value)})})
   }
   updatelist(target){
-    this.setState({
-      list: [target, ...this.state.list]
+    AsyncStorage.getItem('@Attestation:users').then(value => {
+      if (JSON.parse(value) == null){
+        console.log('Empty List')
+        this.setState({
+          list: [target]
+        })
+      }else{
+        this.setState({
+          list: [target, ...this.state.list]
+        })
+      }
     })
     AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
     AsyncStorage.getItem('@Attestation:users').then(value => {console.log(JSON.parse(value))})
+    
   }
+  delete(){
+    this.setState({list: []})
+    AsyncStorage.setItem('@Attestation:users', JSON.stringify([]))
 
-  /*_storeData = async () => {
-    try {
-      await AsyncStorage.setItem('@Attestation:users', "3");
-    } catch (error) {
-      console.log('Not saved')
-    }
-  };*/
-
-  /*_retrieveData = async () => {
-    var value,collect;
-    try {
-      value = await AsyncStorage.getItem('@Attestation:users').then(
-        (values) => {
-          collect = values;
-          //console.log('Then: ',values);
-        });
-      if (value !== null) {
-        return value
-      }
-    } catch (error) {
-      console.log('Didn\'t get the data')
-    }
-    return collect;
-  };*/
+  }
 
   render(){
     return (
@@ -460,7 +591,7 @@ export default class App extends React.Component{
             tabBarOptions={{
             activeTintColor: '#1D749D'
           }} >
-            <Tab.Screen name="Mes Attestations" component={()=><Mes list= {this.state.list}/>} 
+            <Tab.Screen name="Mes Attestations" component={()=><Mes delete={this.delete.bind(this)} list= {this.state.list}/>} 
               options={{
                 tabBarLabel: 'Mes Attestations',
                 tabBarIcon: ({ color, size }) => (

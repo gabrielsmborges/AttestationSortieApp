@@ -1,6 +1,6 @@
 {
-  "name": "attestation",
-  "displayName": "attestation",
+  "name": "Attestation",
+  "displayName": "Attestation",
   "expo": {
     "name": "attestation",
     "slug": "attestation",
@@ -9,10 +9,10 @@
       "android"
     ],
     "assetBundlePatterns": [
-      "**/*"
+      "asssets/pdf/*"
     ],
     "android": {
-      "package": "com.yourcompany.yourappname",
+      "package": "com.gabrielsmborges.attestationsortie",
       "versionCode": 1
     }
   }

@@ -287,3 +287,95 @@ return (
 
 
 //list: JSON.parse(await AsyncStorage.getItem('@Attestation:users')),
+
+
+
+<Card>
+        <View style={{flexDirection: "row"}}>
+          <View style={{flex: 5}}> 
+            <Card.Title title={this.props.profile.prenom} subtitle={this.props.profile.motif} />
+            <Card.Content>
+              <Text>
+                {
+                  `${this.datedate} à ${this.datehours}`
+               }
+              </Text>
+              <Text>Motif</Text>
+            </Card.Content>
+            <Card.Actions>
+              <Button>PDF</Button>
+            </Card.Actions>
+          </View>
+
+          <View style={{flex: 5}}>
+            <TouchableOpacity onPress={()=>this.props.showQr(this.qr_code)}>
+            <Card.Cover style={{flex: 1}} source={{ uri: this.qr_code }} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        </Card>
+
+
+
+
+
+
+
+
+        <SwipeListView
+          props = {this.props}
+          datedate = {this.datedate}
+          datehours = {this.datehours}
+          qr_code = {this.qr_code}
+          renderItem={(props, datedate, datehours, qr_code)=>{
+            <Card>
+              <View style={{flexDirection: "row"}}>
+                <View style={{flex: 5}}> 
+                  <Card.Title title={props.profile.prenom} subtitle={props.profile.motif} />
+                  <Card.Content>
+                    <Text>
+                      {
+                        `${datedate} à ${datehours}`
+                    }
+                    </Text>
+                    <Text>Motif</Text>
+                  </Card.Content>
+                  <Card.Actions>
+                    <Button>PDF</Button>
+                  </Card.Actions>
+                </View>
+
+                <View style={{flex: 5}}>
+                  <TouchableOpacity onPress={()=>props.showQr(qr_code)}>
+                  <Card.Cover style={{flex: 1}} source={{ uri: qr_code }} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Card>
+          }}
+          
+        />
+
+
+
+date: new Date(),
+      nom:"",
+      prenom: "",
+      dt_naissance:"",
+      lieu_naissance:"",
+      addresse: "", 
+      ville:"",
+      cd_postal:"",
+      motif:"",
+      showdate : false,
+      text: '',
+
+
+
+      2020-04-10T19:09:43.227Z
+
+
+
+
+
+      (profile, reasons, dateactuel, dateactuelhours, datesortie, datesortieheures)

@@ -1,9 +1,9 @@
 {
-  "name": "Attestation",
-  "displayName": "Attestation",
+  "name": "Attestation Sortie - COVID-19",
+  "displayName": "Attestation Sortie - COVID-19",
   "expo": {
-    "name": "attestation",
-    "slug": "attestation",
+    "name": "attestationcovid19",
+    "slug": "attestationcovid19",
     "version": "1.0.0",
     "platforms": [
       "android"
@@ -12,7 +12,7 @@
       "asssets/pdf/*"
     ],
     "android": {
-      "package": "com.gabrielsmborges.attestationsortie",
+      "package": "com.gabrielsmborges.attestationcovid19",
       "versionCode": 1
     }
   }

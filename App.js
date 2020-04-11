@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Text, View, ScrollView, Linking , AsyncStorage, TouchableOpacity, Image, TouchableHighlight} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -9,14 +10,18 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { TextInput, Button, Card, Title, Paragraph, Avatar} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded, AdMob } from 'expo-ads-admob'
-import Swipeable from 'react-native-swipeable-row';
-import Swipeout from 'react-native-swipeout';
-import * as FileSystem from 'expo-file-system';
-import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
-console.disableYellowBox = false;
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import * as Print from 'expo-print';
+
+/*import {
+  processColor, // make sure to add processColor to your imports if you want to use hex colors as shown below
+} from 'react-native';
+var Browser = require('react-native-browser');*/
+console.disableYellowBox = true;
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
+
 
 class attest_profile{
   constructor(prenom, nom, dt_naissance, lieu_naissance, addresse, ville, cd_postal, motif, date){
@@ -70,103 +75,56 @@ class Profile extends React.Component{
   uri = encodeURI(this.textforuri)
 
   qr_code = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${this.uri}&choe=UTF-8`
+
+
+
   
-  buildPDF = async () => {
-    const page1 = PDFPage
-    .modify(0)
-    .drawText(
-      `${this.props.profile.prenom} ${this.props.profile.nom}`,
-      {
-        x: 123, 
-        y: 683,
-        color: "#ffffff",
-        size: 11
-      })
-    .drawText(
-      `${this.props.profile.dt_naissance}`,
-      {
-        x: 123,
-        y: 661,
-        color: "#ffffff",
-        size: 11
-      }
-      )
-    .drawText(
-      `${this.props.profile.lieu_naissance}`,
-      {
-        x: 92,
-        y: 638,
-        color: "#ffffff",
-        size: 11
-      }
-      )
-    .drawText(
-      `${this.props.profile.addresse} ${this.props.profile.cd_postal} ${this.props.profile.ville}`,
-      {
-        x: 134,
-        y: 613,
-        color: "#ffffff",
-        size: 11
-      }
-      )
 
-    if(this.props.profile.motif.includes('professionels')){
-      page1.drawText('x', {x: 76, y: 527, size: 19})
+  buildPDF(){
+    var height;
+    switch (this.props.profile.motif){
+      case "Déplacements professionels":
+        height = 322;
+        break;
+      case "Achats (1ère nécessité/Professionel)":
+        height = 376;
+        break;
+      case "Consultations":
+        height = 420;
+        break;
+      case "Motif familial":
+        height = 458;
+        break;
+      case "Assistance aux personnes vulnérables":
+        height = 458;
+        break;
+      case "Garde d’enfants":
+        height = 458;
+        break;
+      case "Déplacement bref/Activité physique (1km)":
+        height = 519;
+        break;
+      case "Convocation judiciaire ou administrative":
+        height = 569;
+        break;
+      case "Missions d’intérêt général sur demande de l’autorité administrative":
+        height = 608;
+        break;
     }
-    else if(this.props.profile.motif.includes('Achats')){
-      page1.drawText('x', {x: 76, y: 478, size: 19})
-    }
-    else if(this.props.profile.motif.includes('Consultations')){
-      page1.drawText('x', {x: 76, y: 436, size: 19})
-    }
-    else if(this.props.profile.motif.includes('familial')||this.props.profile.motif.includes('Assistance')){
-      page1.drawText('x', {x: 76, y: 400, size: 19})
-    }
-    else if(this.props.profile.motif.includes('physique')){
-      page1.drawText('x', {x: 76, y: 345, size: 19})
-    }
-    else if(this.props.profile.motif.includes('judiciaire')){
-      page1.drawText('x', {x: 76, y: 298, size: 19})
-    }
-    else if(this.props.profile.motif.includes('demande')){
-      page1.drawText('x', {x: 76, y: 260, size: 19})
-    }
+    Print.printAsync({
+      html: `<img style="position: absolute; z-index: -2;" src="https://i.ibb.co/PrNpBpt/certificate-1.jpg"/>
+      <p style="font-size: 14px; position: absolute; margin-top: 156px; margin-left: 150px;">${this.props.profile.prenom} ${this.props.profile.nom}</p>
+      <p style="font-size: 14px; position: absolute; margin-top: 180px; margin-left: 150px;">${this.props.profile.dt_naissance}</p>
+      <p style="font-size: 14px; position: absolute; margin-top: 205px; margin-left: 150px;">${this.props.profile.lieu_naissance}</p>
+      <p style="font-size: 14px; position: absolute; margin-top: 232px; margin-left: 150px;">${this.props.profile.addresse}, ${this.props.profile.cd_postal} ${this.props.profile.ville}</p>
+      <p style="font-size: 14px; position: absolute; margin-top: ${height}px; margin-left: 80px;font-size: 20px;">X</p>
+      <p style="font-size: 14px; position: absolute; margin-top: 650px; margin-left: 120px;">${this.props.profile.ville}</p>
+      <p style="font-size: 14px; position: absolute; margin-top: 675px; margin-left: 100px;">${this.datedate}</p>
+      <p style="font-size: 14px; position: absolute; margin-top: 675px; margin-left: 210px; background-color: white;">${this.datehours}</p>
+      <img style="position: absolute; margin-top: 625px; margin-left: 400px; width: 130px; height: 130px" src="${this.qr_code}"/>`,
 
-    page1
-    .drawText(`${this.props.profile.ville}`,{x: 111, y: 226, size: 11})
-    .drawText('Date de création:', {x: 464, y: 150, size: 7})
-    .drawText(`${this.creationdate} à ${this.creationhours}`, {x: 455, y: 144, size: 7})
-    .drawImage(
-      this.uri,
-      'png',
-      {
-        x: 300 - 170,
-        y: 155,
-        width: 100,
-        height: 100,
-      }
-      )
-    const page2 = PDFPage.create()
-    .setMediaBox(300, 300)
-    .drawImage(this.uri, 'png',{
-      x: 5,
-      y: 25,
-      width: 300, 
-      height: 300
     })
-
-    //const docsDir = await PDFLib.getDocumentsDirectory();
-    const existingPDF = require('./assets/pdf/certificate.pdf')
-    PDFDocument
-  .modify(existingPDF)
-  .modifyPages(page1)
-  .addPage(page2)
-  .write() // Returns a promise that resolves with the PDF's path
-  .then(path => {
-    console.log('PDF modified at: ' + path);
-  });
   }
-
   render(){
     return(
       <View style={{marginVertical: 10}}>
@@ -184,9 +142,9 @@ class Profile extends React.Component{
             </Card.Content>
             <Card.Actions>
               <Button onPress={()=>{
+
                 console.log('Presseds')
                 this.buildPDF()
-                
                 
 
                 }} color="#1D749D">PDF</Button>
@@ -251,13 +209,13 @@ class Nouvelle extends React.Component{
       }, {
         value: "Assistance aux personnes vulnérables",
       }, {
-        value: "Garde d'enfants",
+        value: "Garde d’enfants",
       }, {
         value: "Déplacement bref/Activité physique (1km)",
       }, {
         value: "Convocation judiciaire ou administrative",
       }, {
-        value: "Missions d'intérêt général sur demande de l'autorité administrative",
+        value: "Missions d’intérêt général sur demande de l’autorité administrative",
       }], 
       loadeAd: false,
     }

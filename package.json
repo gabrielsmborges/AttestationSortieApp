@@ -23,6 +23,7 @@
     "expo-asset": "^8.1.4",
     "expo-constants": "^9.0.0",
     "expo-file-system": "^8.1.0",
+    "expo-font": "^8.1.1",
     "expo-print": "^8.1.0",
     "expo-updates": "~0.1.0",
     "font": "0.0.4",

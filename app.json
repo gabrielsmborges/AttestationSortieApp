@@ -3,16 +3,22 @@
   "displayName": "Attestation Sortie - COVID-19",
   "expo": {
     "name": "attestationcovid19",
-    "slug": "attestationcovid19",
+    "icon":"./splash/icon.png",
+    "slug": "attestation",
     "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "image": "./splash/splash.png",
+      "backgroundColor": "#DDF4FF"
+    },
     "platforms": [
       "android"
     ],
     "assetBundlePatterns": [
-      "asssets/pdf/*"
+      "assets/*"
     ],
     "android": {
-      "package": "com.gabrielsmborges.attestationcovid19",
+      "package": "com.gabrielsmborges.attestationsortie",
       "versionCode": 1
     }
   }

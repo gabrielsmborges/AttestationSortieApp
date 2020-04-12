@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { TextInput, Button, Card, Title, Paragraph, Avatar} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AdMobBanner, AdMobInterstitial, PublisherBanner,AdMobRewarded, AdMob } from 'expo-ads-admob'
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import * as Font from 'expo-font';
 import * as Print from 'expo-print';
 
 /*import {
@@ -18,6 +18,9 @@ import * as Print from 'expo-print';
 } from 'react-native';
 var Browser = require('react-native-browser');*/
 console.disableYellowBox = true;
+
+
+
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -59,6 +62,11 @@ class Profile extends React.Component{
     super(props)
     this.state={}
   }
+  async componentWillMount(){
+    await Font.loadAsync({
+      montbold: require("./splash/Montserrat-SemiBold.ttf"),
+      mont: require("./splash/Montserrat-Regular.ttf"),
+    })}
   creation = new Date()
 
   creationdate = `${this.creation.getDate() >= 10 ? "": "0"}${this.creation.getDate()}/${this.creation.getMonth() >= 10 ? "": "0"}${this.creation.getMonth() + 1}/${this.creation.getFullYear()}`
@@ -131,14 +139,13 @@ class Profile extends React.Component{
         <Card>
         <View style={{flexDirection: "row"}}>
           <View style={{flex: 5}}> 
-            <Card.Title title={this.props.profile.prenom} subtitle={this.props.profile.motif} />
+            <Card.Title title={<Text style={{fontFamily: "mont"}}>{this.props.profile.prenom}</Text>} subtitle={<Text style={{fontFamily: "mont"}}>{this.props.profile.motif}</Text>} />
             <Card.Content>
-              <Text>
+              <Text style={{fontFamily: "mont"}}>
                 {
                   `${this.datedate} à ${this.datehours}`
                }
               </Text>
-              <Text>Motif</Text>
             </Card.Content>
             <Card.Actions>
               <Button onPress={()=>{
@@ -184,6 +191,11 @@ class QrCode extends React.Component{
 
 
 class Nouvelle extends React.Component{
+  async componentWillMount(){
+    await Font.loadAsync({
+      montbold: require("./splash/Montserrat-SemiBold.ttf"),
+      mont: require("./splash/Montserrat-Regular.ttf"),
+    })}
   constructor(props){
     super(props)
     this.state={
@@ -221,7 +233,9 @@ class Nouvelle extends React.Component{
     }
   }
   list_users = []
+
   async componentDidMount() {
+
     this.setState({
       date: new Date(),
       nom:"Borges",
@@ -233,8 +247,8 @@ class Nouvelle extends React.Component{
       cd_postal:"28000",
       list: []
     })
-    AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
-    AdMob.setTestDeviceIDAsync('EMULATOR');
+    AdMobInterstitial.setAdUnitID('ca-app-pub-9563762952946722/9412653416'); // Test ID, Replace with your-admob-unit-id
+    AdMobInterstitial.setTestDeviceID('EMULATOR');
     await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {
       console.log("Loaded");
@@ -332,11 +346,11 @@ class Nouvelle extends React.Component{
     return(
       <SafeAreaView style={{backgroundColor: "#DDF4FF"}}> 
         <ScrollView style={{padding: 40}}>
-          <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Nouvelle Attestation</Text>
-          <Text style={{fontSize: 12}}>Remplissez vos informations et sélectionnez un motif.</Text>
+          <Text style={{color: "#1D749D", fontSize: 30, fontFamily: "montbold"}}>Nouvelle Attestation</Text>
+          <Text style={{fontSize: 12, fontFamily: "mont"}}>Remplissez vos informations et sélectionnez un motif.</Text>
           <View style={{marginVertical: 100}}>
             <TextInput
-              label="Prénom:"
+              label={<Text style={{fontFamily: "mont"}}>Prénom:</Text>}
               value={this.state.prenom}
               onChangeText={prenom=> this.setState({prenom: prenom})}
               mode="outlined"
@@ -344,7 +358,7 @@ class Nouvelle extends React.Component{
               style={{marginTop: 10}}
             />
             <TextInput
-              label="Nom:"
+              label={<Text style={{fontFamily: "mont"}}>Nom:</Text>}
               value={this.state.nom}
               onChangeText={nom=> this.setState({nom: nom})}
               mode="outlined"
@@ -352,7 +366,7 @@ class Nouvelle extends React.Component{
               style={{marginTop: 20}}
             />
             <TextInput
-              label="Date de naissance (jj/mm/aaaa):"
+              label={<Text style={{fontFamily: "mont"}}>Date de naissance (jj/mm/aaaa):</Text>}
               value={this.state.dt_naissance}
               onChangeText={text => {
                 if (text.match(/^\d{2}$/) !== null) {
@@ -369,7 +383,7 @@ class Nouvelle extends React.Component{
               style={{marginTop: 20}}
             />
             <TextInput
-              label="Lieu de Naissance:"
+              label={<Text style={{fontFamily: "mont"}}>Lieu de Naissance:</Text>}
               value={this.state.lieu_naissance}
               onChangeText={lieu_naissance=> this.setState({lieu_naissance: lieu_naissance})}
               mode="outlined"
@@ -377,7 +391,7 @@ class Nouvelle extends React.Component{
               style={{marginTop: 20}}
             />
             <TextInput
-              label="Addresse:"
+              label={<Text style={{fontFamily: "mont"}}>Addresse</Text>}
               value={this.state.addresse}
               onChangeText={addresse=> this.setState({addresse: addresse})}
               mode="outlined"
@@ -385,7 +399,7 @@ class Nouvelle extends React.Component{
               style={{marginTop: 20}}
             />
             <TextInput
-              label="Ville:"
+              label={<Text style={{fontFamily: "mont"}}>Ville:</Text>}
               value={this.state.ville}
               onChangeText={ville=> this.setState({ville: ville})}
               mode="outlined"
@@ -393,7 +407,7 @@ class Nouvelle extends React.Component{
               style={{marginTop: 20}}
             />
             <TextInput
-              label="Code Postal:"
+              label={<Text style={{fontFamily: "mont"}}>Code Postal:</Text>}
               value={this.state.cd_postal}
               onChangeText={cd_postal=> this.setState({cd_postal: cd_postal})}
               keyboardType="numeric"
@@ -402,13 +416,13 @@ class Nouvelle extends React.Component{
               style={{marginTop: 20}}
             />
 
-            <Text style={{fontSize:25, marginTop: 50}}>Motif de Sortie:</Text>
+            <Text style={{fontSize:25, marginTop: 50, fontFamily: "mont"}}>Motif de Sortie:</Text>
             <Dropdown
-              label='Motif de Sortie'
+              label={<Text style={{fontFamily: "mont"}}>Motif de Sortie</Text>}
               data={this.state.data}
               onChangeText = {value => {this.setState({motif: value})}}
             />
-            <Text style={{fontSize:25, marginTop: 50}}>Date et Heure:</Text>
+            <Text style={{fontSize:25, marginTop: 50,fontFamily: "mont"}}>Date et Heure:</Text>
             <View style={{flexDirection:'row', flexWrap:'wrap', marginTop: 20}}>
             {this.state.showdate && (
               <DateTimePicker
@@ -425,15 +439,15 @@ class Nouvelle extends React.Component{
               />
             )}
               <Button style={{flex: 1, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={()=>{this.setState({showdate: true, mode:"date"})}}>
-                {`${this.state.date.getDate() >= 10 ? "": "0"}${this.state.date.getDate()}/${this.state.date.getMonth() >= 10 ? "": "0"}${this.state.date.getMonth() + 1}/${this.state.date.getFullYear()}`}
+                <Text style={{fontFamily: "montbold"}}>{`${this.state.date.getDate() >= 10 ? "": "0"}${this.state.date.getDate()}/${this.state.date.getMonth() >= 10 ? "": "0"}${this.state.date.getMonth() + 1}/${this.state.date.getFullYear()}`}</Text>
               </Button>
               <Button style={{flex: 1, marginHorizontal: 6, paddingVertical: 10}} color="#5AB7E3" mode="contained" onPress={()=>{this.setState({showdate: true, mode: "time"})}}>
-                {`${this.state.date.getHours() >= 10 ? "": "0"}${this.state.date.getHours()}h${this.state.date.getMinutes() >= 10 ? "": "0"}${this.state.date.getMinutes()}`}
+                <Text style={{fontFamily: "montbold"}}>{`${this.state.date.getHours() >= 10 ? "": "0"}${this.state.date.getHours()}h${this.state.date.getMinutes() >= 10 ? "": "0"}${this.state.date.getMinutes()}`}</Text>
               </Button>
             </View>
             <View style={{alignItems: "center", marginVertical: 30}}>
               <Button style={{width: 150, paddingVertical: 10}} color="#1D749D" mode="contained" onPress={this._handlePress} >
-                Générer
+                <Text style={{fontFamily: "montbold"}}>Générer</Text>
               </Button>
             </View>
           </View>
@@ -445,6 +459,11 @@ class Nouvelle extends React.Component{
 }
 
 class Infos extends React.Component{
+  async componentWillMount(){
+    await Font.loadAsync({
+      montbold: require("./splash/Montserrat-SemiBold.ttf"),
+      mont: require("./splash/Montserrat-Regular.ttf"),
+    })}
   constructor(props){
     super(props)
     this.state= {
@@ -454,17 +473,17 @@ class Infos extends React.Component{
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: "#DDF4FF"}}>
         <ScrollView style={{padding: 40}}>
-          <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Infos</Text>
+          <Text style={{color: "#1D749D", fontSize: 30, fontFamily: "montbold"}}>Infos</Text>
           <View style={{marginTop: 50}}>
-            <Text style={{fontSize: 15, marginVertical: 20}}>Cette application n"est pas gérée par le gouvernement</Text>
-            <Text style={{fontSize: 15, marginVertical: 20, color: "#1D749D"}} onPress={() => Linking.openURL('https://media.interieur.gouv.fr/deplacement-covid-19/')}>Site officiel pour créer ses attestations</Text>
+            <Text style={{fontSize: 15, marginVertical: 20, fontFamily: "mont"}}>Cette application nest pas gérée par le gouvernement</Text>
+            <Text style={{fontSize: 15, marginVertical: 20, color: "#1D749D", fontFamily: "mont"}} onPress={() => Linking.openURL('https://media.interieur.gouv.fr/deplacement-covid-19/')}>Site officiel pour créer ses attestations</Text>
             <View style={{flexDirection: "row", marginVertical: 20}}>
-              <Text>Application dévelopée par</Text>
-              <Text style={{color: "#1D749D"}} onPress={() => Linking.openURL('http://gabrielborges.dev')}>Gabriel Borges</Text>
+              <Text style={{fontFamily: "mont"}}>Application dévelopée par </Text>
+              <Text style={{color: "#1D749D", fontFamily: "mont"}} onPress={() => Linking.openURL('http://gabrielborges.dev')}>Gabriel Borges</Text>
             </View>
           </View>
         </ScrollView>
-        <Text style={{fontSize: 20, color: "white", position: "absolute", bottom: 0, margin: 50,padding: 10, backgroundColor: "#1D749D", borderRadius: 14}} onPress={() => Linking.openURL('mailto:gabrielsmborges@gmail.com')}>Contact</Text>
+        <Text style={{fontFamily: "mont", fontSize: 20, color: "white", position: "absolute", bottom: 0, margin: 50,padding: 10, backgroundColor: "#1D749D", borderRadius: 14}} onPress={() => Linking.openURL('mailto:gabrielsmborges@gmail.com')}>Contact</Text>
       </SafeAreaView>
     )
   }
@@ -478,6 +497,11 @@ class Mes extends React.Component{
       actualQr : ""
     }
   }
+  async componentWillMount(){
+    await Font.loadAsync({
+      montbold: require("./splash/Montserrat-SemiBold.ttf"),
+      mont: require("./splash/Montserrat-Regular.ttf"),
+    })}
   changeQr(uri){
     this.setState({showQr: !this.state.showQr, actualQr : uri})
   }
@@ -493,10 +517,15 @@ class Mes extends React.Component{
           <SafeAreaView style={{ flex: 1, backgroundColor: "#DDF4FF"}}>
             {this.state.showQr ? <QrCode hideQr={this.changeQr.bind(this)} uri={this.state.actualQr}/>: console.log('not showing qr')}
           <ScrollView>
+            <AdMobBanner
+              bannerSize="fullBanner"
+              adUnitID="ca-app-pub-9563762952946722/5789258701" // Test ID, Replace with your-admob-unit-id
+              testDeviceID="EMULATOR"
+              servePersonalizedAds/>
             <View style={{margin: 40}}>
-            <Text style={{color: "#1D749D", fontSize: 30, fontWeight: "bold"}}>Mes Attestations</Text>
-              {this.props.list[0] ? (this.list.map(value => <Profile refresh={this.refresh.bind(this)} delete={this.props.delete} showQr={this.changeQr.bind(this)} profile={value}/>)) : <Text>Aucune Attestation n'a été crée</Text>}
-              {this.props.list[0] ? <Button color="red" mode="contained" icon="trash-can" onPress={()=>{this.props.delete()}}>Supprimer Tout</Button> : <Text></Text>}
+            <Text style={{color: "#1D749D", fontSize: 30, fontFamily: "montbold"}}>Mes Attestations</Text>
+              {this.props.list[0] ? (this.list.map(value => <Profile refresh={this.refresh.bind(this)} delete={this.props.delete} showQr={this.changeQr.bind(this)} profile={value}/>)) : <Text style={{fontFamily: "mont"}}>Aucune Attestation n'a été crée</Text>}
+              {this.props.list[0] ? <Button color="red" mode="contained" icon="trash-can" onPress={()=>{this.props.delete()}}><Text style={{fontFamily: "mont"}}>Supprimmer Tout</Text></Button> : <Text></Text>}
             </View>
             </ScrollView>
         </SafeAreaView>  
@@ -513,10 +542,21 @@ export default class App extends React.Component{
       lastRefresh: Date(Date.now()).toString(),
     }
   }
+  
+  async componentWillMount(){
+    await Font.loadAsync({
+      montbold: require("./splash/Montserrat-SemiBold.ttf"),
+      mont: require("./splash/Montserrat-Regular.ttf"),
+    })}
+
   componentDidMount(){
     //AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
     AsyncStorage.getItem('@Attestation:users').then(value => {this.setState({list: JSON.parse(value)})})
   }
+
+
+
+
   updatelist(target){
     AsyncStorage.getItem('@Attestation:users').then(value => {
       if (JSON.parse(value) == null){
@@ -531,7 +571,7 @@ export default class App extends React.Component{
       }
     })
     AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
-    AsyncStorage.getItem('@Attestation:users').then(value => {console.log(JSON.parse(value))})
+    //AsyncStorage.getItem('@Attestation:users').then(value => {console.log(JSON.parse(value))})
     
   }
   delete(){
@@ -547,7 +587,8 @@ export default class App extends React.Component{
           <Tab.Navigator 
             initialRouteName="Nouvelle Attestation"
             tabBarOptions={{
-            activeTintColor: '#1D749D'
+            activeTintColor: '#1D749D',
+            labelStyle:{fontFamily: "mont", fontSize: 10, height: 15},
           }} >
             <Tab.Screen name="Mes Attestations" component={()=><Mes delete={this.delete.bind(this)} list= {this.state.list}/>} 
               options={{
@@ -578,6 +619,6 @@ export default class App extends React.Component{
           </Tab.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
-    );
+      )
   }
 }

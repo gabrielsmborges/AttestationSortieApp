@@ -2,9 +2,10 @@
   "name": "Attestation Sortie - COVID-19",
   "displayName": "Attestation Sortie - COVID-19",
   "expo": {
-    "name": "attestationcovid19",
+    "name": "Attestation Sortie - COVID-19",
+    "description": "Application permettant créer ses attestations de sortie dérogatoire directement sur son téléphone.", 
     "icon":"./splash/icon.png",
-    "slug": "attestation",
+    "slug": "attestation-sortie-covid19",
     "version": "1.0.0",
     "orientation": "portrait",
     "splash": {
@@ -19,7 +20,11 @@
     ],
     "android": {
       "package": "com.gabrielsmborges.attestationsortie",
-      "versionCode": 1
+      "backgroundColor": "#DDF4FF", 
+      "versionCode": 1,
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-9563762952946722~9791927362"
+      }
     }
   }
 }

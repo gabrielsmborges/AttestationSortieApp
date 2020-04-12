@@ -238,16 +238,9 @@ class Nouvelle extends React.Component{
 
     this.setState({
       date: new Date(),
-      nom:"Borges",
-      prenom: "Gabriel",
-      dt_naissance:"25/01/2001",
-      lieu_naissance:"Cascais",
-      addresse: "7 Rue JEan Baptiste de la Quintine", 
-      ville:"Chartres",
-      cd_postal:"28000",
       list: []
     })
-    AdMobInterstitial.setAdUnitID('ca-app-pub-9563762952946722/9412653416'); // Test ID, Replace with your-admob-unit-id
+    AdMobInterstitial.setAdUnitID('ca-app-pub-9563762952946722/1765171645'); //  TEST:'ca-app-pub-3940256099942544/8691691433'
     AdMobInterstitial.setTestDeviceID('EMULATOR');
     await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {
@@ -323,7 +316,6 @@ class Nouvelle extends React.Component{
   }
 
   co(){
-    console.log('co connected')
     const newpers = new attest_profile(
       this.state.prenom,
       this.state.nom,
@@ -494,7 +486,7 @@ class Mes extends React.Component{
     super(props)
     this.state = {
       showQr: false,
-      actualQr : ""
+      actualQr : "", 
     }
   }
   async componentWillMount(){
@@ -519,13 +511,13 @@ class Mes extends React.Component{
           <ScrollView>
             <AdMobBanner
               bannerSize="fullBanner"
-              adUnitID="ca-app-pub-9563762952946722/5789258701" // Test ID, Replace with your-admob-unit-id
+              adUnitID="ca-app-pub-9563762952946722/5789258701" // TEST 'ca-app-pub-3940256099942544/6300978111'
               testDeviceID="EMULATOR"
               servePersonalizedAds/>
             <View style={{margin: 40}}>
             <Text style={{color: "#1D749D", fontSize: 30, fontFamily: "montbold"}}>Mes Attestations</Text>
-              {this.props.list[0] ? (this.list.map(value => <Profile refresh={this.refresh.bind(this)} delete={this.props.delete} showQr={this.changeQr.bind(this)} profile={value}/>)) : <Text style={{fontFamily: "mont"}}>Aucune Attestation n'a été crée</Text>}
-              {this.props.list[0] ? <Button color="red" mode="contained" icon="trash-can" onPress={()=>{this.props.delete()}}><Text style={{fontFamily: "mont"}}>Supprimmer Tout</Text></Button> : <Text></Text>}
+              {this.props.elements ? (this.list.map(value => <Profile refresh={this.refresh.bind(this)} delete={this.props.delete} showQr={this.changeQr.bind(this)} profile={value}/>)) : <Text style={{fontFamily: "mont"}}>Aucune Attestation n'a été crée</Text>}
+              {this.props.elements? <Button color="red" mode="contained" icon="trash-can" onPress={()=>{this.props.delete()}}><Text style={{fontFamily: "mont"}}>Supprimmer Tout</Text></Button> : <Text></Text>}
             </View>
             </ScrollView>
         </SafeAreaView>  
@@ -540,6 +532,7 @@ export default class App extends React.Component{
     this.state={
       list: [],
       lastRefresh: Date(Date.now()).toString(),
+      elements: true
     }
   }
   
@@ -551,31 +544,35 @@ export default class App extends React.Component{
 
   componentDidMount(){
     //AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
-    AsyncStorage.getItem('@Attestation:users').then(value => {this.setState({list: JSON.parse(value)})})
+    AsyncStorage.getItem('@Attestation:users').then(value => {
+      if(JSON.parse(value)== null){
+        this.setState({elements: false})
+      }else{
+        this.setState({list: JSON.parse(value)})
+      }
+    })
   }
 
 
-
+  componentWillUnmount(){
+    AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
+  }
 
   updatelist(target){
     AsyncStorage.getItem('@Attestation:users').then(value => {
-      if (JSON.parse(value) == null){
-        console.log('Empty List')
-        this.setState({
-          list: [target]
-        })
+      if(this.state.list == null){
+        this.setState({list: [target], elements: true})
       }else{
-        this.setState({
-          list: [target, ...this.state.list]
-        })
+        this.setState({list: [target, ...this.state.list], elements: true})
       }
+    }).then(()=>{
+      AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
     })
-    AsyncStorage.setItem('@Attestation:users', JSON.stringify(this.state.list))
     //AsyncStorage.getItem('@Attestation:users').then(value => {console.log(JSON.parse(value))})
     
   }
   delete(){
-    this.setState({list: []})
+    this.setState({list: [], elements: false})
     AsyncStorage.setItem('@Attestation:users', JSON.stringify([]))
 
   }
@@ -590,7 +587,7 @@ export default class App extends React.Component{
             activeTintColor: '#1D749D',
             labelStyle:{fontFamily: "mont", fontSize: 10, height: 15},
           }} >
-            <Tab.Screen name="Mes Attestations" component={()=><Mes delete={this.delete.bind(this)} list= {this.state.list}/>} 
+            <Tab.Screen name="Mes Attestations" component={()=><Mes elements={this.state.elements} delete={this.delete.bind(this)} list= {this.state.list}/>} 
               options={{
                 tabBarLabel: 'Mes Attestations',
                 tabBarIcon: ({ color, size }) => (

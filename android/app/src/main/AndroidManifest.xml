@@ -23,7 +23,7 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme">
 
-      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@gabrielsmborges/attestation" />
+      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@gabrielsmborges/attestation-sortie-covid19" />
       <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="37.0.0" />
 
       <meta-data android:name="expo.modules.updates.EXPO_RELEASE_CHANNEL" android:value="default" />

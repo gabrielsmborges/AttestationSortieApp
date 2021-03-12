@@ -27,7 +27,7 @@
     "expo-print": "^8.1.0",
     "expo-updates": "~0.1.0",
     "font": "0.0.4",
-    "jspdf": "^1.5.3",
+    "jspdf": "^2.3.1",
     "pdf-lib": "^1.4.1",
     "qrcode": "^1.4.4",
     "react": "~16.9.0",
